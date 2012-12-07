@@ -3,7 +3,6 @@ import Image
 
 class GradL1EnergyFunc(EnergyFunc.EnergyFunc):
     def calcEnergy(self, img):
-        print "hello"
         (width, height) = img.size
         pix = img.load()
         energy = [[0 for j in range(height)] for i in range(width)]
