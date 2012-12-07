@@ -11,7 +11,7 @@ def main():
     sc.setFunction(e1)
     sc2.setFunction(lapl)
 
-    sc.displayEVI()
+    sc.displayPathOnEVI()
     sc2.displayEVI()
 
 class SeamCarving(object):
@@ -23,6 +23,19 @@ class SeamCarving(object):
         self.adjustRange()
         self.getEnergyVisualImage()
         self.res_img.show()
+
+    def displayPathOnEVI(self):
+        self.getEnergyImage()
+        path = self.getPath()
+        self.adjustRange()
+        self.getEnergyVisualImage()
+        
+        (width, height) = self.res_img.size
+        pix = self.res_img.load()
+        for i in range(height):
+            pix[path[i], i] = (255, 0, 0)
+        self.res_img.show()
+        
 
     def loadImage(self):
         self.in_img = Image.open(self.file_name)
@@ -64,7 +77,29 @@ class SeamCarving(object):
     def getPath(self):
         width = len(self.energy_img)
         height = len(self.energy_img[0])
-        
+        ene_table = [[self.energy_img[i][j] for j in range(height)] for i in range(width)]
+        for i in range(height-2, 0, -1):
+            for j in range(width):
+                min_val = ene_table[j][i+1]
+                for k in [j-1, j+1]:
+                    if 0 <= k < width and min_val > ene_table[k][i+1]:
+                        min_val = ene_table[k][i+1]
+                ene_table[j][i] += min_val
+
+        path = []
+        min_ind = 0
+        for i in range(width):
+           if ene_table[min_ind][0] > ene_table[i][0]:
+               min_ind = i
+        path.append(i)
+
+        for i in range(1, height):
+            min_inde = path[i-1]
+            for j in [path[i-1]-1, path[i-1]+1]:
+                if 0 <= j < width and ene_table[min_inde][i] > ene_table[j][i]:
+                    min_inde = j
+            path.append(min_inde)
+        return path
 
     def createClone(self):
         clone = SeamCarving(self.file_name)
