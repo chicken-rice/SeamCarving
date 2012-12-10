@@ -5,7 +5,7 @@ class LaplEnergyFunc(EnergyFunc.EnergyFunc):
     def calcEnergy(self, img):
         (width, height) = img.size
         pix = img.load()
-        energy = [[0 for j in range(height)] for i in range(width)]
+        energy = [[pix[i, j] for j in range(height)] for i in range(width)]
         
         for i in range(2, width-1):
             for j in range(2, height-1):

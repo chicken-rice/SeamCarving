@@ -12,7 +12,7 @@ def main():
     sc2.setFunction(lapl)
 
     sc.displayPathOnEVI()
-    sc2.displayEVI()
+    sc2.displayPathOnEVI()
 
 class SeamCarving(object):
     def __init__(self, file_name):
