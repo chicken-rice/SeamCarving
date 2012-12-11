@@ -6,17 +6,40 @@ def main():
     sc = SeamCarving("input_gray.png")
     sc.loadImage()
     sc2 = sc.createClone()
+    sc3 = sc.createClone()
     e1 = GradL1EnergyFunc.GradL1EnergyFunc()
     lapl = LaplEnergyFunc.LaplEnergyFunc()
     sc.setFunction(e1)
     sc2.setFunction(lapl)
 
-    sc.displayPathOnEVI()
-    sc2.displayPathOnEVI()
+    sc.getEnergyImage()
+    sc2.getEnergyImage()
+    #sc3.energy_img = sc.energy_img
+    sc3.energy_img = addEnergy(sc.energy_img, sc2.energy_img)
+    #print addEnergy(sc.energy_img, sc2.energy_img)
+
+    
+
+    print max([max(sc.energy_img[i]) for i in range(len(sc.energy_img))]),
+    print min([min(sc.energy_img[i]) for i in range(len(sc.energy_img))])
+
+    print max([max(sc2.energy_img[i]) for i in range(len(sc2.energy_img))]),
+    print min([min(sc2.energy_img[i]) for i in range(len(sc2.energy_img))])
+
+    print max([max(sc3.energy_img[i]) for i in range(len(sc3.energy_img))]),
+    print min([min(sc3.energy_img[i]) for i in range(len(sc3.energy_img))])
+    sc.test()
+    sc2.test()
+    sc3.test()
 
 class SeamCarving(object):
     def __init__(self, file_name):
         self.file_name = file_name
+
+    def test(self):
+        self.adjustRange()
+        self.getEnergyVisualImage()
+        self.res_img.show()
 
     def displayEVI(self):
         self.getEnergyImage()
@@ -105,6 +128,17 @@ class SeamCarving(object):
         clone = SeamCarving(self.file_name)
         clone.in_img = self.in_img.copy()
         return clone
+
+def addEnergy(ene1, ene2):
+    width = len(ene1)
+    height = len(ene1[0])
+    res_ene = [[0 for j in range(height)] for i in range(width)]
+    for i in range(width):
+        for j in range(height):
+            if ene1[i][j] != 0 and ene2[i][j] != 0:
+                res_ene[i][j] = ene1[i][j] + ene2[i][j]
+    return res_ene
+
 
 if __name__ == '__main__':
     main()
