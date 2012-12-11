@@ -31,7 +31,65 @@ def main():
     sc.test()
     sc2.test()
     sc3.test()
+    
+def main2():
+    sc = SeamCarving("parts/part4.png")
+    sc.loadImage()
+    sc2 = SeamCarving("parts/part5.png")
+    sc2.loadImage()
+    sc3 = sc2.createClone()
+    sc3.file_name = "parts/part4_5.png"
+    
+    e1 = GradL1EnergyFunc.GradL1EnergyFunc()
+    lapl = LaplEnergyFunc.LaplEnergyFunc()
+    sc.setFunction(e1)
+    sc2.setFunction(lapl)
+    
+    sc.getEnergyImage()
+    sc2.getEnergyImage()
+    sc3.energy_img = addEnergy(sc.energy_img, sc2.energy_img)
+    
+    sc.test2()
+    sc2.test2()
+    sc3.test2()
+    
+def main3():
+    sc = SeamCarving("parts/part2-3.png")
+    sc.loadImage()
+    sc2 = SeamCarving("parts/part4-5.png")
+    sc2.loadImage()
+    sc3 = sc2.createClone()
+    sc3.file_name = "parts/part2_5.png"
+    
+    e1 = GradL1EnergyFunc.GradL1EnergyFunc()
+    lapl = LaplEnergyFunc.LaplEnergyFunc()
+    sc.setFunction(e1)
+    sc2.setFunction(lapl)
+    
+    sc.getEnergyImage()
+    sc2.getEnergyImage()
+    
+    #sc.adjustRange()
+    #sc2.adjustRange()
+    
 
+    
+    sc3.energy_img = addEnergy(sc.energy_img, sc2.energy_img)
+    
+    print max([max(sc.energy_img[i]) for i in range(len(sc.energy_img))]),
+    print min([min(sc.energy_img[i]) for i in range(len(sc.energy_img))])
+
+    print max([max(sc2.energy_img[i]) for i in range(len(sc2.energy_img))]),
+    print min([min(sc2.energy_img[i]) for i in range(len(sc2.energy_img))])
+
+    print max([max(sc3.energy_img[i]) for i in range(len(sc3.energy_img))]),
+    print min([min(sc3.energy_img[i]) for i in range(len(sc3.energy_img))])    
+    
+    sc.test2()
+    sc2.test2()
+    sc3.test2()
+    
+    
 class SeamCarving(object):
     def __init__(self, file_name):
         self.file_name = file_name
@@ -40,6 +98,20 @@ class SeamCarving(object):
         self.adjustRange()
         self.getEnergyVisualImage()
         self.res_img.show()
+        
+    def test2(self):
+        self.energy_img = threshold_img(self.energy_img, 3)
+        self.adjustRange()
+        self.getEnergyVisualImage()
+        f_name = "result/" + self.file_name.split("/")[1].split(".p")[0] + "_ene3.png"
+        self.res_img.save(f_name,"png")
+        
+    def saveEVI(self):
+        self.getEnergyImage()
+        self.adjustRange()
+        self.getEnergyVisualImage()
+        f_name = "result/" + self.file_name.split("/")[1].split(".p")[0] + "_ene.png"
+        self.res_img.save(f_name,"png")
 
     def displayEVI(self):
         self.getEnergyImage()
@@ -139,6 +211,15 @@ def addEnergy(ene1, ene2):
                 res_ene[i][j] = ene1[i][j] + ene2[i][j]
     return res_ene
 
+def threshold_img(in_ene, max_val):
+    width = len(in_ene)
+    height = len(in_ene[0])
+    res_ene = [[in_ene[i][j] for j in range(height)] for i in range(width)]
+    for i in range(width):
+        for j in range(height):
+            if in_ene[i][j] > max_val:
+                res_ene[i][j] = max_val
+    return res_ene
 
 if __name__ == '__main__':
-    main()
+    main3()
