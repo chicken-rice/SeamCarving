@@ -54,17 +54,17 @@ def main2():
     sc3.test2()
     
 def main3():
-    sc = SeamCarving("parts/part2-3.png")
+    sc = SeamCarving("parts/part4_side.png")
     sc.loadImage()
-    sc2 = SeamCarving("parts/part4-5.png")
+    sc2 = SeamCarving("parts/part5_side.png")
     sc2.loadImage()
     sc.lowpassFilter()
     sc2.lowpassFilter()
 
     sc3 = sc2.createClone()
-    sc4 = sc3.createClone()
-    sc3.file_name = "parts/part2_5.png"
-    sc4.file_name = "parts/distance.png"
+    #sc4 = sc3.createClone()
+    sc3.file_name = "parts/part45_side.png"
+    #sc4.file_name = "parts/distance.png"
     
     e1 = GradL1EnergyFunc.GradL1EnergyFunc()
     lapl = LaplEnergyFunc.LaplEnergyFunc()
@@ -80,7 +80,7 @@ def main3():
 
     
     sc3.energy_img = addEnergy(sc.energy_img, sc2.energy_img)
-    sc4.energy_img = addDistanceEnergy(sc.in_img, sc2.in_img)
+    #sc4.energy_img = addDistanceEnergy(sc.in_img, sc2.in_img)
     
     print max([max(sc.energy_img[i]) for i in range(len(sc.energy_img))]),
     print min([min(sc.energy_img[i]) for i in range(len(sc.energy_img))])
@@ -91,12 +91,12 @@ def main3():
     print max([max(sc3.energy_img[i]) for i in range(len(sc3.energy_img))]),
     print min([min(sc3.energy_img[i]) for i in range(len(sc3.energy_img))])    
     
-    print max([max(sc4.energy_img[i]) for i in range(len(sc4.energy_img))]),
-    print min([min(sc4.energy_img[i]) for i in range(len(sc4.energy_img))])    
+    #print max([max(sc4.energy_img[i]) for i in range(len(sc4.energy_img))]),
+    #print min([min(sc4.energy_img[i]) for i in range(len(sc4.energy_img))])    
     sc.test2()
     sc2.test2()
     sc3.test2()
-    sc4.test2()
+    #sc4.test2()
     
     
 class SeamCarving(object):
@@ -122,8 +122,17 @@ class SeamCarving(object):
             sc_list[i].adjustRange()
             sc_list[i].getEnergyVisualImage()
             f_name = "result_low/" + sc_list[i].file_name.split("/")[1].split(".p")[0] + "_ene" + str(thres[i]) + ".png"
-            sc_list[i].res_img.show()
+            f2_name = "result_low/" + sc_list[i].file_name.split("/")[1].split(".p")[0] + "_res" + str(thres[i]) + ".png"
+            #sc_list[i].res_img.show()
+            
             sc_list[i].res_img.save(f_name,"png")
+            
+            path = sc_list[i].getPath()
+            (width, height) = sc_list[i].res_img.size
+            pix = sc_list[i].res_img.load()
+            for i in range(height):
+                pix[path[i], i] = (255, 0, 0)
+            sc_list[i].res_img.save(f2_name,"png")
 
         #self.energy_img = threshold_img(self.energy_img, 255)
         #self.adjustRange()
