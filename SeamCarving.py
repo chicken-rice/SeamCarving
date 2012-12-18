@@ -55,8 +55,10 @@ def main2():
     
 def main3():
     sc = SeamCarving("parts/part4_side.png")
+    #sc = SeamCarving("input_gray.png")
     sc.loadImage()
     sc2 = SeamCarving("parts/part5_side.png")
+    #sc2 = SeamCarving("input_gray.png")
     sc2.loadImage()
     sc.lowpassFilter()
     sc2.lowpassFilter()
@@ -93,8 +95,8 @@ def main3():
     
     #print max([max(sc4.energy_img[i]) for i in range(len(sc4.energy_img))]),
     #print min([min(sc4.energy_img[i]) for i in range(len(sc4.energy_img))])    
-    sc.test2()
-    sc2.test2()
+    #sc.test2()
+    #sc2.test2()
     sc3.test2()
     #sc4.test2()
     
@@ -110,7 +112,7 @@ class SeamCarving(object):
         self.res_img.show()
         
     def test2(self):
-        thres = [3, 7, 15, 31, 63, 127, 255]
+        thres = [255, 127, 63, 31, 15, 7]
         sc_list = []
         for i in range(len(thres)):
              temp_sc = self.createClone()
@@ -126,13 +128,16 @@ class SeamCarving(object):
             #sc_list[i].res_img.show()
             
             sc_list[i].res_img.save(f_name,"png")
+            sc_list[i].displayPathOnEVI(f2_name)
             
-            path = sc_list[i].getPath()
-            (width, height) = sc_list[i].res_img.size
-            pix = sc_list[i].res_img.load()
-            for i in range(height):
-                pix[path[i], i] = (255, 0, 0)
-            sc_list[i].res_img.save(f2_name,"png")
+            #path = sc_list[i].getPath()
+            #(width, height) = sc_list[i].res_img.size
+            #pix = sc_list[i].res_img.load()
+            #for i in range(height):
+            #    pix[path[i], i] = (255, 0, 0)
+            #sc_list[i].res_img.show()
+            #print f2_name
+            #sc_list[i].res_img.save(f2_name,"png")
 
         #self.energy_img = threshold_img(self.energy_img, 255)
         #self.adjustRange()
@@ -154,8 +159,8 @@ class SeamCarving(object):
         self.getEnergyVisualImage()
         self.res_img.show()
 
-    def displayPathOnEVI(self):
-        self.getEnergyImage()
+    def displayPathOnEVI(self, f_name):
+        #self.getEnergyImage()
         path = self.getPath()
         self.adjustRange()
         self.getEnergyVisualImage()
@@ -164,7 +169,11 @@ class SeamCarving(object):
         pix = self.res_img.load()
         for i in range(height):
             pix[path[i], i] = (255, 0, 0)
-        self.res_img.show()
+            for j in range(path[i]-3, path[i]+4):
+                if 0 <= j < width:
+                    pix[j, i] = (255, 0, 0)
+        self.res_img.save(f_name, "png")
+        #self.res_img.show()
         
 
     def loadImage(self):
@@ -208,17 +217,19 @@ class SeamCarving(object):
         width = len(self.energy_img)
         height = len(self.energy_img[0])
         ene_table = [[self.energy_img[i][j] for j in range(height)] for i in range(width)]
+        left = width * 4 / 10
+        right = width * 6 / 10
         for i in range(height-2, 0, -1):
-            for j in range(width):
+            for j in range(left, right):
                 min_val = ene_table[j][i+1]
                 for k in [j-1, j+1]:
-                    if 0 <= k < width and min_val > ene_table[k][i+1]:
+                    if left <= k < right and min_val > ene_table[k][i+1]:
                         min_val = ene_table[k][i+1]
                 ene_table[j][i] += min_val
 
         path = []
         min_ind = 0
-        for i in range(width):
+        for i in range(left, right):
            if ene_table[min_ind][0] > ene_table[i][0]:
                min_ind = i
         path.append(i)
@@ -226,7 +237,7 @@ class SeamCarving(object):
         for i in range(1, height):
             min_inde = path[i-1]
             for j in [path[i-1]-1, path[i-1]+1]:
-                if 0 <= j < width and ene_table[min_inde][i] > ene_table[j][i]:
+                if left <= j < right and ene_table[min_inde][i] > ene_table[j][i]:
                     min_inde = j
             path.append(min_inde)
         return path
